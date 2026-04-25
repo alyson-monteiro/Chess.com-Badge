@@ -76,10 +76,13 @@ SVG;
 
     private function themeLogoHref(string $theme): string
     {
-        $root = dirname(__DIR__, 2);
-        $file = $theme === 'black'
-            ? $root . '/src/assets/white_logo.png'
-            : $root . '/src/assets/black_logo.png';
+        $primaryBase = __DIR__ . '/assets';
+        $legacyBase = dirname(__DIR__, 2) . '/src/assets';
+        $filename = $theme === 'black' ? 'white_logo.png' : 'black_logo.png';
+
+        $file = is_file($primaryBase . '/' . $filename)
+            ? $primaryBase . '/' . $filename
+            : $legacyBase . '/' . $filename;
 
         if (!is_file($file)) {
             return '';
