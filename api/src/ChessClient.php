@@ -10,7 +10,7 @@ final class ChessClient
     {
     }
 
-    /** @return array{avatar: ?string, username: string, ratingLabel: string} */
+    /** @return array{avatar: ?string, username: string, ratingLabel: string, countryCode: ?string} */
     public function fetchBadgeData(string $username, string $mode): array
     {
         $profile = $this->fetchJson(self::BASE_URL . rawurlencode($username));
@@ -18,15 +18,16 @@ final class ChessClient
 
         $avatar = is_array($profile) ? ($profile['avatar'] ?? null) : null;
         $displayName = is_array($profile) && isset($profile['username']) ? (string) $profile['username'] : $username;
+        $countryCode = $this->extractCountryCode($profile);
 
         if (!is_array($stats)) {
-            return ['avatar' => $avatar, 'username' => $displayName, 'ratingLabel' => 'N/A'];
+            return ['avatar' => $avatar, 'username' => $displayName, 'ratingLabel' => 'N/A', 'countryCode' => $countryCode];
         }
 
         $statsKey = Validator::modeStatsKey($mode);
         $modeStats = $stats[$statsKey] ?? null;
         if (!is_array($modeStats)) {
-            return ['avatar' => $avatar, 'username' => $displayName, 'ratingLabel' => 'Unrated'];
+            return ['avatar' => $avatar, 'username' => $displayName, 'ratingLabel' => 'Unrated', 'countryCode' => $countryCode];
         }
 
         $rating = null;
@@ -40,7 +41,27 @@ final class ChessClient
             'avatar' => is_string($avatar) ? $avatar : null,
             'username' => $displayName,
             'ratingLabel' => $rating !== null && $rating > 0 ? (string) $rating : 'Unrated',
+            'countryCode' => $countryCode,
         ];
+    }
+
+    private function extractCountryCode(mixed $profile): ?string
+    {
+        if (!is_array($profile) || !isset($profile['country']) || !is_string($profile['country'])) {
+            return null;
+        }
+
+        $countryUrl = trim($profile['country']);
+        if ($countryUrl === '') {
+            return null;
+        }
+
+        $countryCode = strtoupper((string) basename($countryUrl));
+        if (!preg_match('/^[A-Z]{2}$/', $countryCode)) {
+            return null;
+        }
+
+        return $countryCode;
     }
 
     private function fetchJson(string $url): ?array

@@ -20,7 +20,7 @@ final class SvgRenderer
         'black' => ['bg' => '#404040', 'fg' => '#FFFFFF', 'muted' => '#E6E6E6', 'accent' => '#73AA4A', 'nameColor' => '#73AA4A'],
     ];
 
-    /** @param array{avatar: ?string, username: string, ratingLabel: string} $data */
+    /** @param array{avatar: ?string, username: string, ratingLabel: string, countryCode?: ?string} $data */
     public function render(array $data, string $mode, string $theme): string
     {
         $colors = self::THEMES[$theme] ?? self::THEMES['white'];
@@ -29,6 +29,7 @@ final class SvgRenderer
         $modeLabel = strtoupper($this->escape($mode));
         $logoHref = $this->themeLogoHref($theme);
         $modeIcon = $this->modeIconPath($mode);
+        $flagHref = $this->countryFlagHref($data['countryCode'] ?? null);
 
         $avatarBlock = $this->buildAvatarBlock($data['avatar']);
 
@@ -42,9 +43,8 @@ final class SvgRenderer
   <rect width="230" height="230" rx="24" fill="{$colors['bg']}"/>
   <rect x="1.5" y="1.5" width="227" height="227" rx="22.5" fill="none" stroke="{$colors['accent']}" stroke-opacity="0.18" stroke-width="1"/>
   <image href="{$logoHref}" x="12" y="11" width="84" height="22" preserveAspectRatio="xMinYMid meet"/>
-  <g transform="translate(188,14) scale(1)">
-    <path d="{$modeIcon}" fill="{$colors['accent']}"/> <!-- tirar o modeIcon e colocar a bandeira do pais -->
-  </g>
+  <rect x="190" y="13" width="28" height="20" rx="4" fill="{$colors['accent']}" fill-opacity="0.12" stroke="{$colors['accent']}" stroke-opacity="0.35" stroke-width="1"/>
+  <image href="{$flagHref}" x="192" y="15" width="24" height="16" preserveAspectRatio="xMidYMid slice"/>
   {$avatarBlock}
   <text x="115" y="141" text-anchor="middle" fill="{$colors['nameColor']}" font-size="15" font-weight="700" font-family="Arial, Helvetica, sans-serif">{$username}</text>
   <text x="115" y="164" text-anchor="middle" fill="{$colors['fg']}" font-size="13" font-weight="700" font-family="Arial, Helvetica, sans-serif">highest rating:</text>
@@ -94,6 +94,20 @@ SVG;
         }
 
         return 'data:image/png;base64,' . base64_encode($contents);
+    }
+
+    private function countryFlagHref(?string $countryCode): string
+    {
+        if (!is_string($countryCode)) {
+            return '';
+        }
+
+        $countryCode = strtoupper(trim($countryCode));
+        if (!preg_match('/^[A-Z]{2}$/', $countryCode)) {
+            return '';
+        }
+
+        return 'https://flagsapi.com/' . rawurlencode($countryCode) . '/shiny/64.png';
     }
 
     private function escape(string $value): string
