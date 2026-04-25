@@ -1,10 +1,7 @@
 
 # chess badge
 
-brand colors:
-#73AA4A
-#404040
-#FFFFFF
+
 
 Rating mais alto // Highest Rating
 

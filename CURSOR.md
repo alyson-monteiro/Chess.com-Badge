@@ -1,6 +1,11 @@
 
 ## Overview
 
+brand colors:
+#73AA4A
+#404040
+#FFFFFF
+
 Chess Stats Card is a public badge-as-a-service that allows users to display their Chess.com ratings dynamically inside GitHub READMEs or any markdown-supported environment.
 
 The service fetches data from the Chess.com public API, processes it, and returns a visually appealing SVG card inspired by Duolingo-style stat cards.
