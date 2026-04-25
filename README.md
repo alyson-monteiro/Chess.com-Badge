@@ -2,29 +2,6 @@
 # chess badge
 
 
-This repository contains:
-- A frontend card prototype exported from Figma.
-- A PHP backend that serves dynamic Chess.com SVG badges.
-
-Original Figma project: https://www.figma.com/design/lI6lv1ZDzqVbcncIPgZS1P/chess-badge
-
-## Frontend (prototype)
-
-Install and run:
-
-```bash
-npm i
-npm run dev
-```
-
-## Backend (PHP badge API)
-
-Start local API server (from repository root):
-
-```bash
-php -S 127.0.0.1:8000 -t api api/index.php
-```
-
 Endpoint format:
 
 ```text

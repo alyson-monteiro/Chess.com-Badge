@@ -34,7 +34,7 @@ final class SvgRenderer
         $avatarBlock = $this->buildAvatarBlock($data['avatar']);
 
         return <<<SVG
-<svg xmlns="http://www.w3.org/2000/svg" width="230" height="230" viewBox="0 0 230 230" role="img" aria-label="Chess.com {$modeLabel} rating">
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 230 230" role="img" aria-label="Chess.com {$modeLabel} rating">
   <defs>
     <clipPath id="avatarClip">
       <rect x="75" y="44" width="80" height="80" rx="14" ry="14"/>
