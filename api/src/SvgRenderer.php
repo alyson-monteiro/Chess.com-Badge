@@ -4,10 +4,20 @@ declare(strict_types=1);
 
 final class SvgRenderer
 {
-    /** @var array<string, array{bg: string, fg: string, muted: string, accent: string}> */
+    /** @var array<string, array{bg: string, fg: string, muted: string, accent: string}> 
+     * #73AA4A
+     * #404040
+     * #FFFFFF
+     * #666666
+     * #E6E6E6
+     * bg: background color
+     * fg: foreground color
+     * muted: muted color
+     * accent: accent color
+    */
     private const THEMES = [
-        'white' => ['bg' => '#FFFFFF', 'fg' => '#404040', 'muted' => '#666666', 'accent' => '#73AA4A'],
-        'black' => ['bg' => '#404040', 'fg' => '#FFFFFF', 'muted' => '#E6E6E6', 'accent' => '#73AA4A'],
+        'white' => ['bg' => '#FFFFFF', 'fg' => '#404040', 'muted' => '#666666', 'accent' => '#73AA4A', 'nameColor' => '#73AA4A'],
+        'black' => ['bg' => '#404040', 'fg' => '#FFFFFF', 'muted' => '#E6E6E6', 'accent' => '#73AA4A', 'nameColor' => '#73AA4A'],
     ];
 
     /** @param array{avatar: ?string, username: string, ratingLabel: string} $data */
@@ -33,11 +43,13 @@ final class SvgRenderer
   <rect x="1.5" y="1.5" width="227" height="227" rx="22.5" fill="none" stroke="{$colors['accent']}" stroke-opacity="0.18" stroke-width="1"/>
   <image href="{$logoHref}" x="12" y="11" width="84" height="22" preserveAspectRatio="xMinYMid meet"/>
   <g transform="translate(188,14) scale(1)">
-    <path d="{$modeIcon}" fill="{$colors['accent']}"/>
+    <path d="{$modeIcon}" fill="{$colors['accent']}"/> <!-- tirar o modeIcon e colocar a bandeira do pais -->
   </g>
   {$avatarBlock}
-  <text x="115" y="151" text-anchor="middle" fill="{$colors['fg']}" font-size="15" font-weight="700" font-family="Arial, Helvetica, sans-serif">{$username}</text>
-  <text x="115" y="192" text-anchor="middle" fill="{$colors['fg']}" font-size="48" font-weight="700" font-family="Arial, Helvetica, sans-serif">{$ratingLabel}</text>
+  <text x="115" y="141" text-anchor="middle" fill="{$colors['nameColor']}" font-size="15" font-weight="700" font-family="Arial, Helvetica, sans-serif">{$username}</text>
+  <text x="115" y="164" text-anchor="middle" fill="{$colors['fg']}" font-size="13" font-weight="700" font-family="Arial, Helvetica, sans-serif">highest rating:</text>
+  <text x="115" y="192" text-anchor="middle" fill="{$colors['fg']}" font-size="30" font-weight="700" font-family="Arial, Helvetica, sans-serif">{$ratingLabel}</text>
+  <g transform="translate(55,170) scale(1)"><path d="{$modeIcon}" fill="{$colors['accent']}"/></g>
   <text x="115" y="214" text-anchor="middle" fill="{$colors['muted']}" font-size="11" font-weight="600" letter-spacing="1.2" font-family="Arial, Helvetica, sans-serif">{$modeLabel}</text>
 </svg>
 SVG;
