@@ -124,7 +124,8 @@ SVG;
 
         $hrefs = [];
         foreach ($filenames as $filename) {
-            $href = $this->assetHref($filename);
+            // Use lightweight 96x96 data URIs for better animation performance.
+            $href = $this->assetHref($filename, 96);
             if ($href !== '') {
                 $hrefs[$filename] = $href;
             }
@@ -133,7 +134,7 @@ SVG;
         return $hrefs;
     }
 
-    private function assetHref(string $filename): string
+    private function assetHref(string $filename, ?int $targetSize = null): string
     {
         $primaryBase = __DIR__ . '/assets';
         $legacyBase = dirname(__DIR__, 2) . '/src/assets';
@@ -151,7 +152,73 @@ SVG;
             return '';
         }
 
+        if ($targetSize !== null) {
+            $resized = $this->resizePngBinary($contents, $targetSize, $targetSize);
+            if ($resized !== '') {
+                return 'data:image/png;base64,' . base64_encode($resized);
+            }
+        }
+
         return 'data:image/png;base64,' . base64_encode($contents);
+    }
+
+    private function resizePngBinary(string $pngBinary, int $targetWidth, int $targetHeight): string
+    {
+        if (!function_exists('imagecreatefromstring') || !function_exists('imagecreatetruecolor')) {
+            return '';
+        }
+
+        $source = @imagecreatefromstring($pngBinary);
+        if ($source === false) {
+            return '';
+        }
+
+        $sourceWidth = imagesx($source);
+        $sourceHeight = imagesy($source);
+        if ($sourceWidth <= 0 || $sourceHeight <= 0) {
+            imagedestroy($source);
+            return '';
+        }
+
+        $target = imagecreatetruecolor($targetWidth, $targetHeight);
+        if ($target === false) {
+            imagedestroy($source);
+            return '';
+        }
+
+        imagealphablending($target, false);
+        imagesavealpha($target, true);
+        $transparent = imagecolorallocatealpha($target, 0, 0, 0, 127);
+        imagefilledrectangle($target, 0, 0, $targetWidth, $targetHeight, $transparent);
+
+        // Fit icon inside 96x96 canvas preserving aspect ratio.
+        $scale = min($targetWidth / $sourceWidth, $targetHeight / $sourceHeight);
+        $drawWidth = max(1, (int) round($sourceWidth * $scale));
+        $drawHeight = max(1, (int) round($sourceHeight * $scale));
+        $dstX = (int) floor(($targetWidth - $drawWidth) / 2);
+        $dstY = (int) floor(($targetHeight - $drawHeight) / 2);
+
+        imagecopyresampled(
+            $target,
+            $source,
+            $dstX,
+            $dstY,
+            0,
+            0,
+            $drawWidth,
+            $drawHeight,
+            $sourceWidth,
+            $sourceHeight
+        );
+
+        ob_start();
+        imagepng($target);
+        $result = ob_get_clean();
+
+        imagedestroy($target);
+        imagedestroy($source);
+
+        return is_string($result) ? $result : '';
     }
 
     private function buildBrilliantRain(array $iconHrefs): string
@@ -170,7 +237,7 @@ SVG;
         foreach ($iconHrefs as $filename => $href) {
             // Aumenta a chance de brilliant e Best nas gotas extras.
             $weight = match ($filename) {
-                'brilliant.png', 'Best.png' => 10,
+                'brilliant.png', 'Best.png' => 4,
                 default => 1,
             };
 
