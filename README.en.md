@@ -1,21 +1,21 @@
-🌎 Language: **Português** | [English](README.en.md)
+🌎 Language: **English** | [Português](README.md)
 
 # Chess.com Badge API
 
-Gere um card animado com seu rating do Chess.com para colocar no GitHub, portfólio ou site pessoal.
+Generate an animated card with your Chess.com rating to use on GitHub, your portfolio, or personal website.
 
-## Visão geral
+## Overview
 
-Com esta API, voce cria uma imagem SVG com:
+With this API, you can generate an SVG image with:
 
-- seu nome de usuario;
-- seu rating (`rapid`, `blitz` ou `bullet`);
-- tema claro ou escuro: (`black` ou `white`);
+- your username;
+- your rating (`rapid`, `blitz`, or `bullet`);
+- light or dark theme (`black` or `white`);
 
 ## Endpoint
-https://chesscom-badge-production.up.railway.app/pub/player/SEU_USUARIO/stats/RITMO/TEMA
+https://chesscom-badge-production.up.railway.app/pub/player/YOUR_USERNAME/stats/MODE/THEME
 
-Exemplos:
+Examples:
 
 ```text
 https://chesscom-badge-production.up.railway.app/pub/player/alyson_waly/stats/rapid/black
@@ -31,25 +31,24 @@ https://chesscom-badge-production.up.railway.app/pub/player/GMKrikor/stats/rapid
 ![Chess](https://chesscom-badge-production.up.railway.app/pub/player/magnuscarlsen/stats/bullet/black)
 ![Chess](https://chesscom-badge-production.up.railway.app/pub/player/GMKrikor/stats/rapid/white)
 
-## Parametros disponiveis
+## Available Parameters
 
-- `username`: seu usuario no Chess.com
+- `username`: your Chess.com username
 - `mode`: `rapid`, `blitz`, `bullet`
-- `theme`: `white` ou `black`
+- `theme`: `white` or `black`
 
+## Adding It to Your GitHub README
 
-## Colocando no README do GitHub
-
-Use a URL da API dentro de uma tag de imagem:
+Use the API URL inside an image tag:
 
 ```md
 ![Chess](https://chesscom-badge-production.up.railway.app/pub/player/alyson_waly/stats/rapid/black)
 ```
 
-## Quando algo nao estiver disponivel
+## When Something Is Not Available
 
-- Se o usuario nao existir ou der erro de consulta: aparece `N/A`
-- Se nao houver rating no modo escolhido: aparece `Unrated`
+- If the user does not exist or the API request fails: it shows `N/A`
+- If there is no rating for the selected mode: it shows `Unrated`
 
 📄 License
 
