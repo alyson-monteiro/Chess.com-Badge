@@ -160,6 +160,7 @@ SVG;
         $drops = '';
         $dropCount = max(8, count($iconHrefs));
         $canvasWidth = 230;
+        $cycleDuration = 30;
         $selectedHrefs = array_values($iconHrefs);
 
         $weightedPool = [];
@@ -184,12 +185,18 @@ SVG;
             $x = random_int(6, $canvasWidth - $size - 6);
             $startY = random_int(-120, -28);
             $endY = 248 + random_int(0, 30);
-            $duration = 5 + random_int(-1, 1);
-            $beginOffset = random_int(0, 5000) / 1000;
-            $rotate = random_int(-20, 20);
+            $slot = $cycleDuration / $dropCount;
+            $jitter = random_int(-300, 300) / 1000;
+            $beginOffset = ($i * $slot) + $jitter;
+            if ($beginOffset < 0) {
+                $beginOffset += $cycleDuration;
+            }
+            // Start in-progress so icons are visible immediately on first render.
+            $beginOffset -= $cycleDuration;
+            $rotate = random_int(-10, 10);
 
             $drops .= '<image href="' . $iconHref . '" x="' . $x . '" y="' . $startY . '" width="' . $size . '" height="' . $size . '" transform="rotate(' . $rotate . ' ' . ($x + (int) ($size / 2)) . ' ' . ($startY + (int) ($size / 2)) . ')" preserveAspectRatio="xMidYMid meet">'
-                . '<animate attributeName="y" values="' . $startY . ';' . $endY . '" dur="' . $duration . 's" begin="' . $beginOffset . 's" repeatCount="indefinite"/>'
+                . '<animate attributeName="y" values="' . $startY . ';' . $endY . '" dur="' . $cycleDuration . 's" begin="' . $beginOffset . 's" repeatCount="indefinite"/>'
                 . '</image>';
         }
 
