@@ -30,6 +30,8 @@ final class SvgRenderer
         $logoHref = $this->themeLogoHref($theme);
         $modeIcon = $this->modeIconPath($mode);
         $flagHref = $this->countryFlagHref($data['countryCode'] ?? null);
+        $rainIconHrefs = $this->rainIconHrefs();
+        $brilliantRain = $this->buildBrilliantRain($rainIconHrefs);
 
         $avatarBlock = $this->buildAvatarBlock($data['avatar']);
 
@@ -39,8 +41,14 @@ final class SvgRenderer
     <clipPath id="avatarClip">
       <rect x="75" y="44" width="80" height="80" rx="14" ry="14"/>
     </clipPath>
+    <clipPath id="cardClip">
+      <rect x="0" y="0" width="230" height="230" rx="24" ry="24"/>
+    </clipPath>
   </defs>
   <rect width="230" height="230" rx="24" fill="{$colors['bg']}"/>
+  <g clip-path="url(#cardClip)" opacity="1">
+    {$brilliantRain}
+  </g>
   <rect x="1.5" y="1.5" width="227" height="227" rx="22.5" fill="none" stroke="{$colors['accent']}" stroke-opacity="0.18" stroke-width="1"/>
   <image href="{$logoHref}" x="12" y="11" width="84" height="22" preserveAspectRatio="xMinYMid meet"/>
   <rect x="190" y="13" width="28" height="20" rx="4" fill="{$colors['accent']}" fill-opacity="0.12" stroke="{$colors['accent']}" stroke-opacity="0.35" stroke-width="1"/>
@@ -94,6 +102,93 @@ SVG;
         }
 
         return 'data:image/png;base64,' . base64_encode($contents);
+    }
+
+    private function rainIconHrefs(): array
+    {
+        $filenames = [
+            'brilliant.png',
+            'Best.png',
+            'capivarada.png',
+            'impreciso.png',
+            'ruim.png',
+        ];
+
+        $hrefs = [];
+        foreach ($filenames as $filename) {
+            $href = $this->assetHref($filename);
+            if ($href !== '') {
+                $hrefs[$filename] = $href;
+            }
+        }
+
+        return $hrefs;
+    }
+
+    private function assetHref(string $filename): string
+    {
+        $primaryBase = __DIR__ . '/assets';
+        $legacyBase = dirname(__DIR__, 2) . '/src/assets';
+
+        $file = is_file($primaryBase . '/' . $filename)
+            ? $primaryBase . '/' . $filename
+            : $legacyBase . '/' . $filename;
+
+        if (!is_file($file)) {
+            return '';
+        }
+
+        $contents = file_get_contents($file);
+        if (!is_string($contents)) {
+            return '';
+        }
+
+        return 'data:image/png;base64,' . base64_encode($contents);
+    }
+
+    private function buildBrilliantRain(array $iconHrefs): string
+    {
+        if ($iconHrefs === []) {
+            return '';
+        }
+
+        $drops = '';
+        $dropCount = max(8, count($iconHrefs));
+        $canvasWidth = 230;
+        $selectedHrefs = array_values($iconHrefs);
+
+        $weightedPool = [];
+        foreach ($iconHrefs as $filename => $href) {
+            $weight = match ($filename) {
+                'brilliant.png', 'Best.png' => 10,
+                default => 1,
+            };
+
+            for ($i = 0; $i < $weight; $i++) {
+                $weightedPool[] = $href;
+            }
+        }
+
+        while (count($selectedHrefs) < $dropCount) {
+            $selectedHrefs[] = $weightedPool[random_int(0, count($weightedPool) - 1)];
+        }
+
+        for ($i = 0; $i < count($selectedHrefs); $i++) {
+            $iconHref = $selectedHrefs[$i];
+            $size = random_int(22, 36);
+            $x = random_int(6, $canvasWidth - $size - 6);
+            $startY = random_int(-120, -28);
+            $endY = 248 + random_int(0, 30);
+            $duration = 5 + random_int(-1, 1);
+            $beginOffset = random_int(0, 5000) / 1000;
+            $rotate = random_int(-20, 20);
+
+            $drops .= '<image href="' . $iconHref . '" x="' . $x . '" y="' . $startY . '" width="' . $size . '" height="' . $size . '" transform="rotate(' . $rotate . ' ' . ($x + (int) ($size / 2)) . ' ' . ($startY + (int) ($size / 2)) . ')" preserveAspectRatio="xMidYMid meet">'
+                . '<animate attributeName="y" values="' . $startY . ';' . $endY . '" dur="' . $duration . 's" begin="' . $beginOffset . 's" repeatCount="indefinite"/>'
+                . '</image>';
+        }
+
+        return $drops;
     }
 
     private function countryFlagHref(?string $countryCode): string
