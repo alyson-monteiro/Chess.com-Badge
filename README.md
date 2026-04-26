@@ -22,7 +22,7 @@ https://chesscom-badge-production.up.railway.app/pub/player/lpsupi/stats/blitz/w
 
 https://chesscom-badge-production.up.railway.app/pub/player/magnuscarlsen/stats/bullet/black
 
-![Chess](https://chesscom-badge-production.up.railway.app/pub/player/GMKrikor/stats/rapid/black)
+https://chesscom-badge-production.up.railway.app/pub/player/GMKrikor/stats/rapid/black
 ```
 ![Chess](https://chesscom-badge-production.up.railway.app/pub/player/alyson_waly/stats/rapid/black)
 ![Chess](https://chesscom-badge-production.up.railway.app/pub/player/lpsupi/stats/blitz/white)
