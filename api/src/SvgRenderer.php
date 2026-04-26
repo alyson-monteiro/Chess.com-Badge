@@ -161,14 +161,11 @@ SVG;
         }
 
         $drops = '';
-        // Menos gotas simultaneas para melhorar o frame rate no GitHub.
-        $dropCount = max(4, count($iconHrefs));
+        // Renderiza somente 2 elementos para limitar carga no GitHub.
+        $dropCount = 3;
         $canvasWidth = 230;
         // Duracao total de um ciclo de queda.
         $cycleDuration = 30;
-        // Garante pelo menos 1 gota de cada icone disponivel.
-        $selectedHrefs = array_values($iconHrefs);
-
         $weightedPool = [];
         foreach ($iconHrefs as $filename => $href) {
             // Aumenta a chance de brilliant e Best nas gotas extras.
@@ -182,13 +179,9 @@ SVG;
             }
         }
 
-        while (count($selectedHrefs) < $dropCount) {
-            $selectedHrefs[] = $weightedPool[random_int(0, count($weightedPool) - 1)];
-        }
-
-        for ($i = 0; $i < count($selectedHrefs); $i++) {
-            $iconHref = $selectedHrefs[$i];
-            $size = random_int(22, 36);
+        for ($i = 0; $i < $dropCount; $i++) {
+            $iconHref = $weightedPool[random_int(0, count($weightedPool) - 1)];
+            $size = random_int(22, 30);
             $x = random_int(6, $canvasWidth - $size - 6);
             $startY = random_int(-120, -28);
             $endY = 248 + random_int(0, 30);
@@ -201,9 +194,7 @@ SVG;
             }
             // Inicia como se ja estivesse no meio do ciclo (aparece na hora).
             $beginOffset -= $cycleDuration;
-            $rotate = random_int(-10, 10);
-
-            $drops .= '<image href="' . $iconHref . '" x="' . $x . '" y="' . $startY . '" width="' . $size . '" height="' . $size . '" transform="rotate(' . $rotate . ' ' . ($x + (int) ($size / 2)) . ' ' . ($startY + (int) ($size / 2)) . ')" preserveAspectRatio="xMidYMid meet">'
+            $drops .= '<image href="' . $iconHref . '" x="' . $x . '" y="' . $startY . '" width="' . $size . '" height="' . $size . '" preserveAspectRatio="xMidYMid meet">'
                 . '<animate attributeName="y" values="' . $startY . ';' . $endY . '" dur="' . $cycleDuration . 's" begin="' . $beginOffset . 's" repeatCount="indefinite"/>'
                 . '</image>';
         }
