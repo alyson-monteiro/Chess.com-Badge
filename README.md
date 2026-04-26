@@ -2,7 +2,7 @@
 
 Gere um card animado com seu rating do Chess.com para colocar no GitHub, portfólio ou site pessoal.
 
-## Para que serve
+## Visão geral
 
 Com esta API, voce cria uma imagem SVG com:
 
@@ -10,6 +10,7 @@ Com esta API, voce cria uma imagem SVG com:
 - seu rating (`rapid`, `blitz` ou `bullet`);
 - tema claro ou escuro: (`black` ou `white`);
 
+## Endpoint
 https://chesscom-badge-production.up.railway.app/pub/player/SEU_USUARIO/stats/RITMO/TEMA
 
 Exemplos:
@@ -20,7 +21,13 @@ https://chesscom-badge-production.up.railway.app/pub/player/alyson_waly/stats/ra
 https://chesscom-badge-production.up.railway.app/pub/player/lpsupi/stats/blitz/white
 
 https://chesscom-badge-production.up.railway.app/pub/player/magnuscarlsen/stats/bullet/black
+
+![Chess](https://chesscom-badge-production.up.railway.app/pub/player/GMKrikor/stats/rapid/black)
 ```
+![Chess](https://chesscom-badge-production.up.railway.app/pub/player/alyson_waly/stats/rapid/black)
+![Chess](https://chesscom-badge-production.up.railway.app/pub/player/lpsupi/stats/blitz/white)
+![Chess](https://chesscom-badge-production.up.railway.app/pub/player/magnuscarlsen/stats/bullet/black)
+![Chess](https://chesscom-badge-production.up.railway.app/pub/player/GMKrikor/stats/rapid/white)
 
 ## Parametros disponiveis
 
@@ -41,3 +48,7 @@ Use a URL da API dentro de uma tag de imagem:
 
 - Se o usuario nao existir ou der erro de consulta: aparece `N/A`
 - Se nao houver rating no modo escolhido: aparece `Unrated`
+
+📄 License
+
+This project is licensed under the MIT License — feel free to use, modify, and distribute it as you wish.
