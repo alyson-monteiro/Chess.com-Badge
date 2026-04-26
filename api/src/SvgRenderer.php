@@ -69,7 +69,12 @@ SVG;
             return '<rect x="75" y="44" width="80" height="80" rx="14" fill="#D9D9D9"/><text x="115" y="89" text-anchor="middle" fill="#6D6D6D" fill-opacity="0.95" font-size="12" font-family="Arial, Helvetica, sans-serif">NO AVATAR</text>';
         }
 
-        $safeUrl = $this->escape($avatarUrl);
+        $embeddedAvatar = $this->remoteImageDataUri($avatarUrl);
+        if ($embeddedAvatar === '') {
+            return '<rect x="75" y="44" width="80" height="80" rx="14" fill="#D9D9D9"/><text x="115" y="89" text-anchor="middle" fill="#6D6D6D" fill-opacity="0.95" font-size="12" font-family="Arial, Helvetica, sans-serif">NO AVATAR</text>';
+        }
+
+        $safeUrl = $this->escape($embeddedAvatar);
         return '<rect x="75" y="44" width="80" height="80" rx="14" fill="#D9D9D9"/><image href="' . $safeUrl . '" x="75" y="44" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatarClip)"/>';
     }
 
@@ -202,7 +207,52 @@ SVG;
             return '';
         }
 
-        return 'https://flagsapi.com/' . rawurlencode($countryCode) . '/shiny/64.png';
+        $url = 'https://flagsapi.com/' . rawurlencode($countryCode) . '/shiny/64.png';
+        return $this->remoteImageDataUri($url);
+    }
+
+    private function remoteImageDataUri(string $url): string
+    {
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'timeout' => 4,
+                'ignore_errors' => true,
+                'header' => "User-Agent: chess-stats-card-badge/1.0\r\nAccept: image/*,*/*;q=0.8\r\n",
+            ],
+        ]);
+
+        $binary = @file_get_contents($url, false, $context);
+        if (!is_string($binary) || $binary === '') {
+            return '';
+        }
+
+        $statusCode = 0;
+        $contentType = '';
+        foreach ($http_response_header ?? [] as $headerLine) {
+            if ($statusCode === 0 && preg_match('/\s(\d{3})\s/', $headerLine, $m)) {
+                $statusCode = (int) $m[1];
+            }
+
+            if (stripos($headerLine, 'Content-Type:') === 0) {
+                $contentType = trim(substr($headerLine, 13));
+            }
+        }
+
+        if ($statusCode >= 400) {
+            return '';
+        }
+
+        if ($contentType === '') {
+            $contentType = 'image/png';
+        } else {
+            $contentType = strtolower(trim(explode(';', $contentType, 2)[0]));
+            if (!str_starts_with($contentType, 'image/')) {
+                return '';
+            }
+        }
+
+        return 'data:' . $contentType . ';base64,' . base64_encode($binary);
     }
 
     private function escape(string $value): string
