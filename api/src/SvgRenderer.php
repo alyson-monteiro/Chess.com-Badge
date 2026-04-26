@@ -30,7 +30,9 @@ final class SvgRenderer
         $logoHref = $this->themeLogoHref($theme);
         $modeIcon = $this->modeIconPath($mode);
         $flagHref = $this->countryFlagHref($data['countryCode'] ?? null);
+        // Carrega os icones da chuva (convertidos para base64).
         $rainIconHrefs = $this->rainIconHrefs();
+        // Monta os elementos SVG animados da chuva no fundo.
         $brilliantRain = $this->buildBrilliantRain($rainIconHrefs);
 
         $avatarBlock = $this->buildAvatarBlock($data['avatar']);
@@ -111,6 +113,7 @@ SVG;
 
     private function rainIconHrefs(): array
     {
+        // Lista de icones usados no efeito de chuva.
         $filenames = [
             'brilliant.png',
             'Best.png',
@@ -158,13 +161,17 @@ SVG;
         }
 
         $drops = '';
-        $dropCount = max(8, count($iconHrefs));
+        // Menos gotas simultaneas para melhorar o frame rate no GitHub.
+        $dropCount = max(4, count($iconHrefs));
         $canvasWidth = 230;
+        // Duracao total de um ciclo de queda.
         $cycleDuration = 30;
+        // Garante pelo menos 1 gota de cada icone disponivel.
         $selectedHrefs = array_values($iconHrefs);
 
         $weightedPool = [];
         foreach ($iconHrefs as $filename => $href) {
+            // Aumenta a chance de brilliant e Best nas gotas extras.
             $weight = match ($filename) {
                 'brilliant.png', 'Best.png' => 10,
                 default => 1,
@@ -185,13 +192,14 @@ SVG;
             $x = random_int(6, $canvasWidth - $size - 6);
             $startY = random_int(-120, -28);
             $endY = 248 + random_int(0, 30);
+            // Divide os inicios ao longo da timeline para nao "nascerem juntas".
             $slot = $cycleDuration / $dropCount;
             $jitter = random_int(-300, 300) / 1000;
             $beginOffset = ($i * $slot) + $jitter;
             if ($beginOffset < 0) {
                 $beginOffset += $cycleDuration;
             }
-            // Start in-progress so icons are visible immediately on first render.
+            // Inicia como se ja estivesse no meio do ciclo (aparece na hora).
             $beginOffset -= $cycleDuration;
             $rotate = random_int(-10, 10);
 
